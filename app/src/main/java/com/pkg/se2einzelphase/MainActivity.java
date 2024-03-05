@@ -8,10 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.pkg.se2einzelphase.databinding.ActivityMainBinding;
 
@@ -20,6 +17,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
     public void onSend(View view) {
         EditText editText = (EditText) findViewById(R.id.editTextNumberSigned);
         String matrNr = editText.getText().toString();
+        if (checkIfMatrNrInputIsValid(matrNr)) {
+            return;
+        }
 
         new Thread(() -> {
             try (Socket socket = new Socket("se2-submission.aau.at", 20080)) {
@@ -84,7 +85,53 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         }).start();
-
-
     }
+
+    public void onSort(View view) {
+        EditText editText = (EditText) findViewById(R.id.editTextNumberSigned);
+        String matrNr = editText.getText().toString();
+        if (checkIfMatrNrInputIsValid(matrNr)) {
+            return;
+        }
+        ArrayList<Integer> numbers = new ArrayList<>();
+        for (int i = 0; i < matrNr.length(); i++) {
+            int number = Integer.parseInt(String.valueOf(matrNr.charAt(i)));
+            if (!isPrimeNumber(number)) {
+                numbers.add(number);
+            }
+        }
+        numbers.sort((a, b) -> b - a);
+        StringBuilder result = new StringBuilder();
+        for (int number : numbers) {
+            result.append(number);
+        }
+        Snackbar.make(view, result.toString(), Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+    }
+
+    private boolean isPrimeNumber(int number) {
+        if (number <= 1) {
+            return false;
+        }
+        for (int i = 2; i <= Math.sqrt(number); i++) {
+            if (number % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkIfMatrNrInputIsValid(String matrNr) {
+        EditText editText = (EditText) findViewById(R.id.editTextNumberSigned);
+        if (matrNr.isEmpty()) {
+            editText.setError("Please enter a valid matriculation number");
+            return true;
+        }
+        if (matrNr.length() != 8) {
+            editText.setError("Matriculation number must be 8 digits long");
+            return true;
+        }
+        return false;
+    }
+
 }
