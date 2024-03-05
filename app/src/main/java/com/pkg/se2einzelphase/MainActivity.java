@@ -59,16 +59,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSend(View view) {
-//        Durch	Tap
-//auf	den	Button	soll	die	Eingabe	via	TCP	an	einen	Server	geschickt	werden.	Sobald	eine
-//Antwort	vom	Server	eintrifft,	soll	diese	am	Bildschirm	erscheinen.
-//Der	Server	nimmt	eine	Matrikelnummer	als	Bytestream	über	die	TCP	Verbindung
-//entgegen,	führt	eine	Berechnung	aus	und	sendet	das	Ergebnis	zurück.
-//Die	Server-Domain	lautet:	se2-submission.aau.at,	Port:	20080.
         EditText editText = (EditText) findViewById(R.id.editTextNumberSigned);
         String matrNr = editText.getText().toString();
 
-        // use socket to send matrNr to server and let it run async
         new Thread(() -> {
             try (Socket socket = new Socket("se2-submission.aau.at", 20080)) {
                 socket.getOutputStream().write(matrNr.getBytes());
