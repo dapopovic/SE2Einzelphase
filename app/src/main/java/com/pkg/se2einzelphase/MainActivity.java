@@ -8,22 +8,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
 
-import androidx.navigation.ui.AppBarConfiguration;
-
 import com.pkg.se2einzelphase.databinding.ActivityMainBinding;
+import com.pkg.se2einzelphase.misc.socketThread;
 
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-
-    private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
 
     @Override
@@ -59,30 +55,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSend(View view) {
-        EditText editText = (EditText) findViewById(R.id.editTextNumberSigned);
+        EditText editText = findViewById(R.id.editTextMatrNr);
         String matrNr = editText.getText().toString();
         if (checkIfMatrNrInputIsValid(matrNr)) {
             return;
         }
-
-        new Thread(() -> {
-            try (Socket socket = new Socket("se2-submission.aau.at", 20080)) {
-                socket.getOutputStream().write(matrNr.getBytes());
-                byte[] buffer = new byte[1024];
-                int read = socket.getInputStream().read(buffer);
-                String result = new String(buffer, 0, read);
-                runOnUiThread(() -> ((TextView) findViewById(R.id.txtResult)).setText(result));
-            } catch (Exception e) {
-                runOnUiThread(() -> {
-                    Snackbar.make(view, Objects.requireNonNull(e.getMessage()), Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                });
-            }
-        }).start();
+        try {
+            new socketThread(matrNr, "se2-submission.aau.at", 20080, findViewById(R.id.lblResult)).start();
+        } catch (IllegalArgumentException e) {
+            Snackbar.make(view, Objects.requireNonNull(e.getMessage()), Snackbar.LENGTH_LONG).show();
+        }
     }
 
     public void onSort(View view) {
-        EditText editText = (EditText) findViewById(R.id.editTextNumberSigned);
+        EditText editText = findViewById(R.id.editTextMatrNr);
         String matrNr = editText.getText().toString();
         if (checkIfMatrNrInputIsValid(matrNr)) {
             return;
@@ -99,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         for (int number : numbers) {
             result.append(number);
         }
-        TextView textView = (TextView) findViewById(R.id.txtResult);
+        TextView textView = findViewById(R.id.lblResult);
         textView.setText(result.toString());
     }
 
@@ -116,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean checkIfMatrNrInputIsValid(String matrNr) {
-        EditText editText = (EditText) findViewById(R.id.editTextNumberSigned);
+        EditText editText = findViewById(R.id.editTextMatrNr);
         if (matrNr.isEmpty()) {
             editText.setError("Please enter a valid matriculation number");
             return true;
