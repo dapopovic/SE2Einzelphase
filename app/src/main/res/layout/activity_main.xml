@@ -37,7 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Gib deine Matrikelnummer ein"
+        android:text="Enter your matriculation number"
         android:textSize="27sp"
         app:layout_constraintEnd_toStartOf="@+id/rightGuideline"
         app:layout_constraintStart_toStartOf="@+id/leftGuideline"
@@ -57,7 +57,8 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/rightGuideline"
         app:layout_constraintStart_toStartOf="@+id/leftGuideline"
-        app:layout_constraintTop_toBottomOf="@+id/lblMatr" />
+        app:layout_constraintTop_toBottomOf="@+id/lblMatr"
+        android:autofillHints="" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
@@ -91,7 +92,7 @@
             android:layout_weight="1"
             android:autoSizeMaxTextSize="24dp"
             android:onClick="onSort"
-            android:text="Sort"
+            android:text="sort"
             android:textAllCaps="true" />
 
         <Button
